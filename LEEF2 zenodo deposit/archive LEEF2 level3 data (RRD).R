@@ -36,8 +36,8 @@ files.sources = list.files(file.path("..", "functions"), full.names = TRUE)
 sapply(files.sources, source)
 #parallel::detectCores()
 cores <- 1
-zenodo_sandbox_token <- "V5Zbwyq5b6LoPHvEOkuhjSO5KjFlIXtcOQFCBnkdMQWr7r1UzhRwLGIbPJeo"
-zenodo_token <- "d0D04YyeTUrP5Vw9uNWPwQ99IKANJaXCseycfrBH0xNnwyqbegKAVtTkkOsF"
+zenodo_sandbox_token <- "..."
+zenodo_token <- "..."
 
 sandbox <- FALSE
 if (sandbox) {
