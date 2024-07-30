@@ -1,0 +1,191 @@
+{
+  "_note": "template metadata for sampling date data record on zenodo",
+  
+  "title": "Title will be populated later",
+  
+  "description": "This is one of many records that hold data associated with the LEEF1 experiment performed at University of Zurich.",
+  
+  "_abstract": "",
+  
+  "subject": "LEEF1 UZH",
+  
+  "upload_type": "dataset",
+  
+  "_created": "2020-01-01",
+  
+  "language": "eng",
+  
+  "access_policy_files": "restricted",
+  "embargo_active": "TRUE",
+  "embargo_until": "2030-01-01",
+  
+  "_rightsHolder": "A person or organization owning or managing rights over the resource. Recommended practice is to refer to the rights holder with a URI. If this is not possible or feasible, a literal value that identifies the rights holder may be provided.",
+  
+  "license": "MIT",
+  
+  "community": "UZH-LEEF1",
+  
+  "publisher": "Predictive Ecology Group, University of Zurich",
+  
+  "creator": [
+    {
+      "name": "Romana Limberger",
+      "affiliation": "University of Zurich",
+      "orcid": "0000-0002-9421-7520"
+    },
+    {
+      "name": "Uriah Daugaard",
+      "affiliation": "University of Zurich",
+      "orcid": "0000-0003-4092-717X"
+    },
+    {
+      "name": "Rainer M. Krug",
+      "affiliation": "University of Zurich",
+      "orcid": "0000-0002-7490-0066"
+    },
+    {
+      "name": "Owen L. Petchey",
+      "affiliation": "University of Zurich",
+      "orcid": "0000-0002-7724-1633"
+    }
+  ],
+  "contributor": [
+    {
+      "name": "Anubhav Gupta",
+      "affiliation": "University of Zurich",
+      "orcid": "0000-0001-7977-9747",
+      "type": "datacollector"
+    },
+    {
+      "name": "Debra Zuppinger-Dingley",
+      "affiliation": "University of Zurich",
+      "orcid": "0000-0002-4573-0563",
+      "type": "datacollector"
+    },
+    {
+      "name": "Frank Pennekamp",
+      "affiliation": "University of Zurich",
+      "orcid": "0000-0003-0679-1045",
+      "type": "datacollector"
+    },
+    {
+      "name": "Martina Jelic",
+      "affiliation": "University of Zurich",
+      "type": "datacollector"
+    },
+    {
+      "name": "Owen L. Petchey",
+      "affiliation": "University of Zurich",
+      "orcid": "0000-0002-7724-1633",
+      "type": "projectleader"
+    },
+    {
+      "name": "Rainer M. Krug",
+      "affiliation": "University of Zurich",
+      "orcid": "0000-0002-7490-0066",
+      "type": "datamanager"
+    },
+    {
+      "name": "Romana Limberger",
+      "affiliation": "University of Zurich",
+      "orcid": "0000-0002-9421-7520",
+      "type": "projectleader"
+    },
+    {
+      "name": "Sabina Jyrkinen",
+      "affiliation": "University of Zurich",
+      "type": "datacollector"
+    },
+    {
+      "name": "Seraina Nohl",
+      "affiliation": "University of Zurich",
+      "type": "datacollector"
+    },
+    {
+      "name": "Sofia J. van Moorsel",
+      "affiliation": "University of Zurich",
+      "orcid": "0000-0003-1947-8971",
+      "type": "datacollector"
+    },
+    {
+      "name": "Uriah Daugaard",
+      "affiliation": "University of Zurich",
+      "orcid": "0000-0003-4092-717X",
+      "type": "projectleader"
+    },
+    {
+      "name": "Yves Choffat",
+      "affiliation": "University of Zurich",
+      "type": "datacollector"
+    },
+    {
+      "name": "Zheng Xue",
+      "affiliation": "University of Zurich",
+      "type": "datacollector"
+    },
+    {
+      "name": "Rainer M. Krug",
+      "affiliation": "University of Zurich",
+      "orcid": "0000-0002-7490-0066",
+      "type": "datacurator"
+    }
+  ],
+  "isPartOf": [
+    {
+      "identifier": "10.5281/zenodo.4593200",
+      "relation": "isPartOf"
+    },
+    {
+      "identifier": "10.5281/zenodo.10400509",
+      "relation": "isPartOf"
+    },
+    {
+      "identifier": "10.5281/zenodo.10400502",
+      "relation": "isPartOf"
+    },
+    {
+      "identifier": "10.5281/zenodo.10400507",
+      "relation": "isPartOf"
+    },
+    {
+      "identifier": "10.5281/zenodo.10400495",
+      "relation": "isPartOf"
+    },
+    {
+      "identifier": "10.5281/zenodo.10400486",
+      "relation": "isPartOf"
+    },
+    {
+      "identifier": "10.5281/zenodo.10400438",
+      "relation": "isPartOf"
+    },
+    {
+      "identifier": "10.5281/zenodo.10400472I",
+      "relation": "isPartOf"
+    },
+    {
+      "identifier": "10.5281/zenodo.10400480",
+      "relation": "isPartOf"
+    },
+    {
+      "identifier": "10.5281/zenodo.8248541",
+      "relation": "isPartOf"
+    },
+    {
+      "identifier": "10.5281/zenodo.10400412",
+      "relation": "isPartOf"
+    },
+    {
+      "identifier": "10.5281/zenodo.1040060",
+      "relation": "isPartOf"
+    },
+    {
+      "identifier": "10.5281/zenodo.10400536",
+      "relation": "isPartOf"
+    },
+    {
+      "identifier": "10.5281/zenodo.10400388",
+      "relation": "isPartOf"
+    }
+  ]
+}

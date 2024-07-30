@@ -1,0 +1,255 @@
+---
+title: "Archiving data to zenodo -- LEEF1"
+author: "Owen Petchey"
+format: html
+editor: visual
+---
+
+# Introduction
+
+Instructions and then code for archiving LEEF1 data to zenodo.
+
+## 1. Plan structure of the deposits/records for the project.
+
+A record in zenodo is a deposition of files. A record can have a DOI. We can put multiple data files into a single record. A single zenodo record can hold maximum of 100 files and 50GB. If we need to archive more than 100 files that are less than 50 GB in total we can put the files into a zip file. If there are many files and large files there may need to be multiple zenodo records per project. These could be arranged by sampling day, for example. In the current case, an experiment named "LEEF1" we will make one record for each sampling date, each containing the data coming from that sampling day.
+
+We can define various levels of the data in the LEEF1 experiment:
+
+-   level0: raw, unprocessed, e.g., cxd files from the video microscopy system. This will not be archived--it will be lost.
+-   level1: same information as level0 data, but file formats loss-less converted to open format and compressed, with some aggregation.
+-   level2: contains information extracted from level1 data; information becomes more useful for data analysis; level1 to level2 involves loss of information.
+-   level3: also termed "research ready". For example contains time series of population abundances.
+
+Here we do not cover conversion of data from one level to the next. That is covered in this repo: https://zenodo.org/doi/10.5281/zenodo.4593200
+
+Tests show that one sampling date of level1 data gives about 25 GB of data. One sampling date of level2 data gives 1-2 GB data. Therefore, we will make a zenodo record for each sampling date. A sampling date record will contain both level1 and level2 data.
+
+Clearly it is critical to have a complete and definitive list of sample dates. In what follows these are taken from the archived data. Would be good to also check against an independent source.
+
+## 2. Prepare data
+
+Steps are: - Check required data is present in archive folders. - Remove any unwanted data. - Assemble data for one zenodo record and if required compress into one or few files.
+
+## 3. Prepare metadata
+
+### Prepare bibliographic metadata
+
+The bibliographic metadata will be used to populate fields of the zenodo record, such as title, authors, and keywords. The bibliographic metadata is stored in the file `metadata_LEEF1_sampledate_template.json` and can be read in with:
+
+```{r}
+bib_metadata <- jsonlite::read_json("metadata_LEEF1_sampledate_template.json")
+bib_metadata <- bib_metadata[grep("^_", names(bib_metadata), invert = TRUE)]
+```
+
+We will use and populate this metadata with record specific information when a record is created.
+
+### Prepare research metadata
+
+Not yet available.
+
+## 4. Create record and upload research data
+
+Everything is ready to create a record, add it to zenodo, and upload data files. Also included is querying zenodo for records it already has, and checks for complete ones, or ones with errors.
+
+# Do the business (create records, upload data, for all timestamps)
+
+Some preliminaries, including giving the token(s) for connection with zenodo:
+
+```{r}
+rm(list = ls())
+library(tidyverse)
+library(frictionless)
+library(zen4R)
+#library(deposits)
+files.sources = list.files(file.path("..", "functions"), full.names = TRUE)
+sapply(files.sources, source)
+#parallel::detectCores()
+cores <- 14
+zenodo_sandbox_token <- "V5Zbwyq5b6LoPHvEOkuhjSO5KjFlIXtcOQFCBnkdMQWr7r1UzhRwLGIbPJeo"
+zenodo_token <- "d0D04YyeTUrP5Vw9uNWPwQ99IKANJaXCseycfrBH0xNnwyqbegKAVtTkkOsF"
+```
+
+Give locations of archive data:
+
+```{r}
+archive_location <- "/Volumes/LEEF-1_archive/LEEF.archived.data/LEEF/3.archived.data"
+local_data_location_level1 <- here::here(archive_location, "pre_processed")
+local_data_location_level2 <- here::here(archive_location, "extracted")
+```
+
+Get sampling dates:
+
+```{r}
+sampling_dates_level1 <- unique(str_sub(list.files(local_data_location_level1),
+                          start = -1L - 7, end = -1L))
+sampling_dates_level2 <- unique(str_sub(list.files(local_data_location_level2),
+                          start = -1L - 7, end = -1L))
+```
+
+Check if level1 and level2 contain the same dates, must be TRUE:
+
+```{r}
+identical(sampling_dates_level1, sampling_dates_level2)
+```
+
+Show the number of sampling dates:
+
+Check all required folders are present
+
+```{r}
+level1_files <- list.files(local_data_location_level1)
+length(level1_files)
+length(level1_files[str_detect(level1_files, "mag.16")])
+length(level1_files[str_detect(level1_files, "mag.25")])
+length(level1_files[str_detect(level1_files, "flowcam")])
+length(level1_files[str_detect(level1_files, "flowcyt")])
+length(level1_files[str_detect(level1_files, "manual")])
+length(level1_files[str_detect(level1_files, "o2meter")])
+
+level2_files <- list.files(local_data_location_level2)
+length(level2_files)
+length(level2_files[str_detect(level2_files, "mag.16")])
+length(level2_files[str_detect(level2_files, "mag.25")])
+length(level2_files[str_detect(level2_files, "flowcam")])
+length(level2_files[str_detect(level2_files, "flowcyt")])
+length(level2_files[str_detect(level2_files, "manual")])
+length(level2_files[str_detect(level2_files, "o2meter")])
+```
+
+We see that there are 123 sampling dates for most data types, but 81 for manual counts and 122 for oxygen. This is correct.
+
+**Important**: now we make an object with the list of timestamps (i.e., sample dates). This list would ideally be checked against an independent and definitive list of sample dates.
+
+```{r}
+all_timestamps <- sampling_dates_level1
+```
+
+```{r}
+length(all_timestamps)
+```
+
+Make lists of the folders to compress:
+
+```{r}
+dir_for_compressed_files <- normalizePath(here::here("upload_zenodo"))
+level1_archives_to_compress <- create_archive_filestructure(all_timestamps,
+                                         "level1",
+                                         dir_for_compressed_files)
+level2_archives_to_compress <- create_archive_filestructure(all_timestamps,
+                                         "level2",
+                                         dir_for_compressed_files)
+```
+
+Make the connection to zenodo, sandbox or not sandbox:
+
+```{r}
+sandbox <- FALSE
+if (sandbox) {
+  url_z <- "https://sandbox.zenodo.org/api"
+  zenodo <- zen4R::ZenodoManager$new(
+  url = url_z,
+  token = zenodo_sandbox_token,
+  logger = "INFO")
+} else {
+  url_z <- "https://zenodo.org/api"
+  zenodo <- zen4R::ZenodoManager$new(
+  url = url_z,
+  token = zenodo_token,
+  logger = "INFO"
+)
+}
+```
+
+Check which sampling dates are already on zenodo:
+
+```{r}
+my_zenodo_records <- zenodo$getDepositions(q = "title:(LEEF1)",
+                                           size = 200)
+
+res <- do.call("rbind",
+               lapply(my_zenodo_records,
+                      function(x) get_files_in_draft_record(x)))
+  
+check_res <- check_record_files(res)
+```
+
+Delete records for which the request returned an error:
+
+```{r}
+#lapply(check_res$error_ids$id, function(x) zenodo$deleteRecord(x))
+```
+
+Get the timestamps that remain to be done:
+
+```{r}
+timestamps_not_done <- all_timestamps[!(all_timestamps %in% check_res[[2]]$file_timestamp)]
+timestamps_not_done
+```
+
+Do the work for each timestamp that remains to be worked on. This creates a record, modifies metadata, uploads metadata, compresses the appropriate files, and uploads the appropriate files.
+
+```{r}
+res <- pbmcapply::pbmclapply(
+  timestamps_not_done,
+  function(x) do_for_one_timestamp(all_timestamps = all_timestamps, 
+                                   timestamp_todo = x,
+                                 level1_archives_to_compress = level1_archives_to_compress,
+                                 level2_archives_to_compress = level2_archives_to_compress,
+                                 dir_for_compressed_files = dir_for_compressed_files,
+                                 zenodo = zenodo),
+  mc.cores = cores
+)
+```
+
+Check records on zenodo:
+
+```{r}
+my_zenodo_records <- zenodo$getDepositions(q = "title:(LEEF1)",
+                                           size = 200)
+res <- do.call("rbind",
+               lapply(my_zenodo_records,
+                      function(x) get_files_in_draft_record(x)))
+check_res <- check_record_files(res)
+```
+
+Delete records for which the request returned an error:
+
+```{r}
+#lapply(check_res$error_ids$id, function(x) zenodo$deleteRecord(x))
+```
+
+Get the timestamps that remain to be done:
+
+```{r}
+timestamps_not_done <- all_timestamps[!(all_timestamps %in% check_res[[2]]$file_timestamp)]
+timestamps_not_done
+```
+
+Publish the records:
+
+```{r}
+my_zenodo_records <- zenodo$getDepositions(q = "title:(LEEF1 AND data)")
+#for(i in 1:length(my_zenodo_records))
+#  zenodo$publishRecord(my_zenodo_records[[i]]$id)
+```
+
+# How to download data files
+
+This section is not very well implemented at present. And currently there is only ability to download files from published and unrestricted records. Download from embargoed records is not currently implemented.
+
+```{r}
+
+## works for published records without restricted data
+my_zenodo_records <- zenodo$getDepositions(q = "title:(LEEF1 AND data)")
+i <- 1
+my_zenodo_records[[i]]$metadata$title
+my_zenodo_records[[i]]$id
+my_doi <- my_zenodo_records[[i]]$getDOI()
+my_doi
+rec <- zenodo$getRecordByDOI(my_doi)
+files <- rec$listFiles(pretty = TRUE)
+#dir.create("download_zenodo")
+my_zenodo_records[[i]]$downloadFiles(path = "download_zenodo")
+#download_zenodo(path = "download_zenodo", my_doi)
+#downloaded_files <- list.files("download_zenodo")
+```
