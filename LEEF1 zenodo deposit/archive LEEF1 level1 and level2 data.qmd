@@ -233,19 +233,83 @@ my_zenodo_records <- zenodo$getDepositions(q = "title:(LEEF1 AND data)")
 #  zenodo$publishRecord(my_zenodo_records[[i]]$id)
 ```
 
+
+# How to set a license for the records
+
+```{r}
+rm(list = ls())
+library(tidyverse)
+library(frictionless)
+library(zen4R)
+#library(deposits)
+files.sources = list.files(file.path("..", "functions"), full.names = TRUE)
+sapply(files.sources, source)
+#parallel::detectCores()
+cores <- 14
+zenodo_sandbox_token <- "..."
+zenodo_token <- "..."
+```
+
+
+```{r}
+sandbox <- FALSE
+if (sandbox) {
+  url_z <- "https://sandbox.zenodo.org/api"
+  zenodo <- zen4R::ZenodoManager$new(
+  url = url_z,
+  token = zenodo_sandbox_token,
+  logger = "INFO")
+} else {
+  url_z <- "https://zenodo.org/api"
+  zenodo <- zen4R::ZenodoManager$new(
+  url = url_z,
+  token = zenodo_token,
+  logger = "INFO"
+)
+}
+```
+
+
+```{r}
+my_zenodo_records_LEEF1 <- zenodo$getDepositions(q = "title:(LEEF1 AND data)",
+                                           size = 1000)
+i <- 1
+for(i in 1:length(my_zenodo_records_LEEF1)) {
+  my_zenodo_records_LEEF1[[i]]$metadata$rights <- NULL
+  my_zenodo_records_LEEF1[[i]]$setLicense("cc-by-4.0")
+  myrec <- zenodo$depositRecord(my_zenodo_records_LEEF1[[i]], publish = FALSE)
+}
+rm(my_zenodo_records_LEEF1)
+```
+
+
+```{r}
+my_zenodo_records_LEEF2 <- zenodo$getDepositions(q = "title:(LEEF2 AND data)",
+                                           size = 1000)
+i <- 1
+for(i in 1:length(my_zenodo_records_LEEF2)) {
+  my_zenodo_records_LEEF2[[i]]$metadata$rights <- NULL
+  my_zenodo_records_LEEF2[[i]]$setLicense("cc-by-4.0")
+  myrec <- zenodo$depositRecord(my_zenodo_records_LEEF2[[i]], publish = FALSE)
+}
+rm(my_zenodo_records_LEEF2)
+
+#my_zenodo_records[[i]]$metadata$title
+#my_zenodo_records[[i]]$id
+#my_doi <- my_zenodo_records[[i]]$getDOI()
+#my_doi
+#my_zenodo_records[[i]]$metadata$title
+#my_zenodo_records[[i]]$metadata$rights
+
+  
+```
+
+
 # How to download data files
 
 This section is not very well implemented at present. And currently there is only ability to download files from published and unrestricted records. Download from embargoed records is not currently implemented.
 
 ```{r}
-
-## works for published records without restricted data
-my_zenodo_records <- zenodo$getDepositions(q = "title:(LEEF1 AND data)")
-i <- 1
-my_zenodo_records[[i]]$metadata$title
-my_zenodo_records[[i]]$id
-my_doi <- my_zenodo_records[[i]]$getDOI()
-my_doi
 rec <- zenodo$getRecordByDOI(my_doi)
 files <- rec$listFiles(pretty = TRUE)
 #dir.create("download_zenodo")
